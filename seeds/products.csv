@@ -1,0 +1,6 @@
+product_id,name,category,price,cost,created_at
+101,Wireless Headphones,Electronics,99.99,45.00,2023-01-01 00:00:00
+102,Coffee Mug,Home & Kitchen,12.99,5.50,2023-01-01 00:00:00
+103,Running Shoes,Sports,129.99,65.00,2023-01-05 00:00:00
+104,Notebook,Office Supplies,8.99,3.25,2023-01-01 00:00:00
+105,Phone Case,Electronics,24.99,8.75,2023-01-10 00:00:00
