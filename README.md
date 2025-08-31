@@ -19,3 +19,5 @@ Deliverables
 •	GitHub Actions workflow for CI/CD
 •	dbt documentation site generation
 •	All code properly version controlled in Git
+Trigger CI test
+Trigger CI test
