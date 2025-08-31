@@ -2,3 +2,15 @@
 target/
 dbt_packages/
 logs/
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# dbt
+dbt_modules/
+target/
+
+# VS Code
+.vscode/

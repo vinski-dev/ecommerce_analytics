@@ -1,7 +1,4 @@
-{{ config(
-    materialized = 'view',
-    schema = 'staging'
-) }}
+{{ config( materialized = 'view', schema = 'staging') }}
 
 
 select
