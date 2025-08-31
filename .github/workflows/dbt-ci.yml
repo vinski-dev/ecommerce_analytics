@@ -1,0 +1,64 @@
+name: dbt CI
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+
+    runs-on: ${{ matrix.os }}  # ✅ No space before colon
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Create virtual environment
+        run: |
+          python -m venv .venv
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            .\.venv\Scripts\activate
+          else
+            source .venv/bin/activate
+          fi
+
+      - name: Install dependencies (with fallback)
+        run: |
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            .\.venv\Scripts\activate
+          else
+            source .venv/bin/activate
+          fi
+
+          if [ -f requirements.txt ]; then
+            echo "✅ Found requirements.txt — installing..."
+            pip install --upgrade pip
+            pip install -r requirements.txt
+          else
+            echo "⚠️ requirements.txt not found — installing dbt-core directly"
+            pip install --upgrade pip
+            pip install dbt-core
+          fi
+
+      - name: Verify dbt installation
+        run: |
+          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
+            .\.venv\Scripts\activate
+          else
+            source .venv/bin/activate
+          fi
+
+          dbt deps
+          dbt run
+          dbt debug
+          dbt snapshot
