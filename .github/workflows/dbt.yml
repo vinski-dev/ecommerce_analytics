@@ -2,13 +2,16 @@ name: dbt CI
 
 on:
   push:
-    branches: [main]
+    branches: [master]
   pull_request:
-    branches: [main]
+    branches: [master]
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs on : ${{ matrix.os }}
 
     steps:
     - name: Checkout repo
@@ -41,3 +44,4 @@ jobs:
       run: |
         source .venv/bin/activate
         dbt --version
+        dbt debug
