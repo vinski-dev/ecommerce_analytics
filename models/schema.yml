@@ -1,0 +1,52 @@
+version: 2
+
+model:
+    tables:
+      - name: customers
+        description: Customer master data
+        columns:
+          - name: customer_id
+            tests:
+              - unique
+              - not_null
+      - name: orders
+        description: Order transactions
+        columns:
+          - name: order_id
+            tests:
+              - unique
+              - not_null
+          - name: customer_id
+            tests:
+              - not_null
+              - relationships:
+                  to: source('raw', 'customers')
+                  field: customer_id
+
+models:
+  - name: stg_customers
+    description: Cleaned and standardized customer data
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: email
+        tests:
+          - not_null
+
+  - name: customer_ltv
+    description: Customer lifetime value analysis
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: total_revenue
+        tests:
+          - not_null
+      - name: total_orders
+        tests:
+          - not_null
+          - dbt_utils.expression_is_true:
+              expression: ">= 0"

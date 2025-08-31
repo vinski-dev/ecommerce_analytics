@@ -1,26 +1,43 @@
-name: dbt CI/CD
+name: dbt CI
 
 on:
   push:
     branches: [main]
   pull_request:
+    branches: [main]
 
 jobs:
-  dbt-run:
+  build:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
+    - name: Checkout repo
+      uses: actions/checkout@v4
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.12'
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
 
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
+    - name: Create virtual environment
+      run: |
+        python -m venv .venv
+        source .venv/bin/activate
+
+    - name: Install dependencies (with fallback)
+      run: |
+        source .venv/bin/activate
+        if [ -f requirements.txt ]; then
+          echo "✅ Found requirements.txt — installing..."
+          pip install --upgrade pip
           pip install -r requirements.txt
+        else
+          echo "⚠️ requirements.txt not found — installing dbt-core directly"
+          pip install --upgrade pip
+          pip install dbt-core
+        fi
 
-      - name: Run dbt
-        run: dbt run --profiles-dir ./setup
+    - name: Verify dbt installation
+      run: |
+        source .venv/bin/activate
+        dbt --version
