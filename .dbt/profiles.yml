@@ -1,0 +1,13 @@
+ecommerce_analytics:
+  outputs:
+    dev:
+      account: KNLRJPO-MCB42465
+      database: sales_db
+      password: 14Nmaxv2.1yconnect2021
+      role: accountadmin
+      schema: dbt_apaano
+      threads: 4
+      type: snowflake
+      user: vinski521
+      warehouse: dbt_training_wh
+  target: dev
