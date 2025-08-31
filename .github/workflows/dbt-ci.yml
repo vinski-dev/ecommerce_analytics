@@ -1,4 +1,4 @@
-name: dbt CI
+name: vinski dbt CI
 
 on:
   push:
@@ -7,58 +7,60 @@ on:
     branches: [master]
 
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-
-    runs-on: ${{ matrix.os }}  # ✅ No space before colon
+  dbt-build:
+    runs-on: windows-latest
 
     steps:
-      - name: Checkout repo
+      # 🧩 Step 1: Checkout repository
+      - name: 🧩 Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up Python
+      # 🐍 Step 2: Set up Python
+      - name: 🐍 Set up Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      - name: Create virtual environment
+      # 🛠️ Step 3: Create and activate virtual environment
+      - name: 🛠️ Create and activate .venv
+        shell: pwsh
         run: |
           python -m venv .venv
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            .\.venv\Scripts\activate
-          else
-            source .venv/bin/activate
-          fi
+          .\.venv\Scripts\Activate.ps1
 
-      - name: Install dependencies (with fallback)
+      # 📦 Step 4: Install dependencies (modular fallback)
+      - name: 📦 Install dependencies
+        shell: pwsh
         run: |
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            .\.venv\Scripts\activate
-          else
-            source .venv/bin/activate
-          fi
+          .\.venv\Scripts\Activate.ps1
 
-          if [ -f requirements.txt ]; then
-            echo "✅ Found requirements.txt — installing..."
+          if (Test-Path "requirements.txt") {
+            Write-Host "✅ Found requirements.txt — installing..."
             pip install --upgrade pip
             pip install -r requirements.txt
-          else
-            echo "⚠️ requirements.txt not found — installing dbt-core directly"
+          } else {
+            Write-Host "⚠️ requirements.txt not found — installing dbt-core directly"
             pip install --upgrade pip
             pip install dbt-core
-          fi
+          }
 
-      - name: Verify dbt installation
+      # 🚀 Step 5: Run dbt lifecycle commands
+      - name: 🚀 Run dbt lifecycle
+        shell: pwsh
         run: |
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            .\.venv\Scripts\activate
-          else
-            source .venv/bin/activate
-          fi
+          .\.venv\Scripts\Activate.ps1
 
           dbt deps
           dbt run
           dbt debug
           dbt snapshot
+          # Optional: Uncomment to include tests and docs
+          # dbt test
+          # dbt docs generate
+
+      # 📁 Optional: Upload dbt artifacts (docs, logs, etc.)
+      # - name: 📁 Upload dbt docs
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: dbt-docs
+      #     path: target/
